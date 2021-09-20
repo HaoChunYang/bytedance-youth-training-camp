@@ -5,7 +5,8 @@ http.createServer((request, response) => {
   // response.end('hello world') // 好理解吗
 
 
-  const { url, method } = request
+  const { url, method, headers } = request
+  console.log(url)
   if (url === '/' && method === 'GET') {
     fs.readFile('index.html', (err, data) => {
       if (err) {
@@ -18,7 +19,15 @@ http.createServer((request, response) => {
       response.setHeader('Content-Type', 'text/html')
       response.end(data)
     })
-  } else {
+  }
+  else if (url === '/user' && method === 'GET') {
+    response.writeHead(200, { 'Content-Type': 'application/json' })
+    response.end(JSON.stringify({ name: 'hcy' }))
+  }
+  else if (method === 'GET' && headers.accept.indexOf('image/*')) {
+    fs.createReadStream('.' + url).pipe(response)
+  }
+  else {
     response.statusCode = 400
     response.setHeader('Content-Type', 'text/plain;charset=utf-8')
     response.end('404 没有了')
